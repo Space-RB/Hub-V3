@@ -1,8 +1,23 @@
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+local TextService = game:GetService("TextService")
+local Players = game:GetService("Players")
+
+local function RandomString(len)
+    local s = ""
+    local chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    for i = 1, len or 12 do
+        local r = math.random(1, #chars)
+        s = s .. chars:sub(r, r)
+    end
+    return s
+end
+
+local function protect_gui(gui)
+    gui.Parent = CoreGui
+end
+
 local function CreateWatermark()
-    local RunService = game:GetService("RunService")
-    local TextService = game:GetService("TextService")
-    local CoreGui = game:GetService("CoreGui")
-    local Players = game:GetService("Players")
     local player = Players.LocalPlayer
 
     if CoreGui:FindFirstChild("WatermarkGui") then
@@ -14,35 +29,41 @@ local function CreateWatermark()
     screenGui.Parent = CoreGui
     screenGui.ResetOnSpawn = false
     screenGui.DisplayOrder = 10
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-    local frame = Instance.new("Frame")
-    frame.Position = UDim2.new(1, -10, 0, 15)
-    frame.AnchorPoint = Vector2.new(1, 0)
-    frame.Size = UDim2.new(0, 220, 0, 32)
-    frame.BackgroundTransparency = 0.05
-    frame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-    frame.BorderSizePixel = 0
-    frame.Parent = screenGui
+    local Main = Instance.new("Frame")
+    Main.Name = RandomString()
+    Main.Position = UDim2.new(1, -10, 0, 15)
+    Main.AnchorPoint = Vector2.new(1, 0)
+    Main.Size = UDim2.new(0, 220, 0, 32)
+    Main.BackgroundTransparency = 0.05
+    Main.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    Main.BorderSizePixel = 0
+    Main.Parent = screenGui
 
     local corner = Instance.new("UICorner")
+    corner.Name = RandomString()
     corner.CornerRadius = UDim.new(0, 6)
-    corner.Parent = frame
+    corner.Parent = Main
 
     local stroke = Instance.new("UIStroke")
+    stroke.Name = RandomString()
     stroke.Color = Color3.fromHex("BB66FF")
     stroke.Thickness = 2
     stroke.Transparency = 0.2
     stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    stroke.Parent = frame
+    stroke.Parent = Main
 
     local padding = Instance.new("UIPadding")
+    padding.Name = RandomString()
     padding.PaddingLeft = UDim.new(0, 10)
     padding.PaddingRight = UDim.new(0, 10)
     padding.PaddingTop = UDim.new(0, 5)
     padding.PaddingBottom = UDim.new(0, 5)
-    padding.Parent = frame
+    padding.Parent = Main
 
     local textLabel = Instance.new("TextLabel")
+    textLabel.Name = RandomString()
     textLabel.Size = UDim2.new(1, 0, 1, 0)
     textLabel.BackgroundTransparency = 1
     textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -51,7 +72,7 @@ local function CreateWatermark()
     textLabel.TextXAlignment = Enum.TextXAlignment.Right
     textLabel.TextYAlignment = Enum.TextYAlignment.Center
     textLabel.RichText = true
-    textLabel.Parent = frame
+    textLabel.Parent = Main
 
     local lastFpsUpdate = 0
     local fps = 0
@@ -102,10 +123,11 @@ local function CreateWatermark()
             textLabel.Font,
             Vector2.new(math.huge, textLabel.AbsoluteSize.Y)
         )
-        frame.Size = UDim2.new(0, textSize.X + 20, 0, 32)
+        Main.Size = UDim2.new(0, textSize.X + 20, 0, 32)
     end
 
-    RunService.RenderStepped:Connect(updateText)
+    local renderConnection = Instance.new("RBXScriptConnection")
+    renderConnection = RunService.RenderStepped:Connect(updateText)
 end
 
 if game.PlaceId == 131716211654599 or game.PlaceId == 16732694052 then
