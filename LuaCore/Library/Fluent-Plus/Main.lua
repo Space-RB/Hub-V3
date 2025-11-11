@@ -1,5 +1,6 @@
 --[[
 dsc.gg/ktC6dNVxDC
+Mady by @agush3nka | @apelsinkafr
 ]]
 
 local Lighting = game:GetService("Lighting")
