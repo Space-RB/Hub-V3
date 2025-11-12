@@ -10,5 +10,5 @@ game:GetService("Players").LocalPlayer.Idled:Connect(function()
     end
 end)
 
-NotificationService:Info("SPACE HUB", "Anti Afk - Enabled")
+--NotificationService:Info("SPACE HUB", "Anti Afk - Enabled")
 print("[Space Hub]: Anti-AFK Enabled")
