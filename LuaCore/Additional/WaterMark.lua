@@ -126,8 +126,7 @@ local function CreateWatermark()
         Main.Size = UDim2.new(0, textSize.X + 20, 0, 32)
     end
 
-    local renderConnection = Instance.new("RBXScriptConnection")
-    renderConnection = RunService.RenderStepped:Connect(updateText)
+    RunService.RenderStepped:Connect(updateText)
 end
 
 if game.PlaceId == 131716211654599 or game.PlaceId == 16732694052 then
