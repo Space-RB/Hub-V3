@@ -3,9 +3,9 @@
     LPH_JIT = function(f) return f end;
     LPH_CRASH = function() while true do end end;
 end;]]
-local MaidSource = game:HttpGet("https://raw.githubusercontent.com/Space-RB/Hub-V3/LuaCore/refs/heads/main/LuaCore/Utility/Maid.lua");
-local SignalSource = game:HttpGet("https://raw.githubusercontent.com/Space-RB/Hub-V3/LuaCore/refs/heads/main/LuaCore/Utility/Signal.lua");
-local ServicesSource = game:HttpGet("https://raw.githubusercontent.com/Space-RB/Hub-V3/LuaCore/refs/heads/main/LuaCore/Utility/Services.lua");
+local MaidSource = game:HttpGet("https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/LuaCore/Utility/Maid.lua");
+local SignalSource = game:HttpGet("https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/LuaCore/Utility/Signal");
+local ServicesSource = game:HttpGet("https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/LuaCore/Utility/Services");
 local Maid = loadstring(MaidSource)();
 local Signal = loadstring(SignalSource)();
 local Services = loadstring(ServicesSource)();
