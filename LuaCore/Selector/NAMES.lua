@@ -34,6 +34,8 @@ local Names = {
     --["Steal A Brainrot"] = "",                                                                                                   -- Steal A Brainrot
     --["Dep Simulator"]    = "",                                                                                                   -- Dep Simulator 2
     --["SFOTH"]            = "",                                                                                                   -- Sword Fights on the Heights IV: Reforged
+
+    ["ForsakenBeta"]     = "https://raw.githubusercontent.com/Space-RB/Premium/refs/heads/main/Scripts/Beta/Forsaken.lua",          -- Forsaken
 }
 
 return Names
