@@ -31,6 +31,7 @@ local IDS = {
     [105555311806207] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/BuildAZoo.lua",                -- Build A Zoo
     [5591597781]      = "https://raw.githubusercontent.com/ago106/tds-roblox/refs/heads/main/loader.lua",                         -- TDS | Game
     [3260590327]      = "https://raw.githubusercontent.com/ago106/tds-roblox/refs/heads/main/loader.lua",                         -- TDS | Lobby
+    [76558904092080]  = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/TheForge.lua",                 -- The Forge 1
     --[101949297449238] = "",                                                                                                     -- Build an Island
     --[18901165922]     = "",                                                                                                     -- Pets Go | No key
     --[132073733865215] = "",                                                                                                     -- Dep Simulator 2
