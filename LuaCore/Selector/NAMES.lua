@@ -27,6 +27,7 @@ local Names = {
     ["Grace"]            = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/Grace.lua",                   -- Grace | Lobby
     ["BuildAZoo"]        = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/BuildAZoo.lua",               -- Build A Zoo
     ["TDS"]              = "https://raw.githubusercontent.com/ago106/tds-roblox/refs/heads/main/loader.lua",                        -- TDS
+    ["The Forge"]  = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/TheForge.lua",                      -- The Forge 1
     --["BuildIsland"]      = "",                                                                                                   -- Build an Island
     --["Ink Game"]         = "",                                                                                                   -- Ink Game
     --["Backyard"]         = "",                                                                                                   -- Dig The backyard
