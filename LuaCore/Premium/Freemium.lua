@@ -1,4 +1,4 @@
-local Event = "7.12"
+local Event = "1.12"
 
 local d,m = Event:match("(%d+)%.(%d+)")
 return os.time() <= os.time{year=os.date("*t").year, month=m, day=d};
