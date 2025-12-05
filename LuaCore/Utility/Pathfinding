@@ -21,6 +21,8 @@ local DEFAULT_SETTINGS = {
 
 local PathfindingService = game:GetService("PathfindingService")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
 local function output(func, msg)
 	func(((func == error and "SimplePath Error: ") or "SimplePath: ")..msg)
 end
@@ -48,11 +50,11 @@ end
 
 --Used to visualize waypoints
 local visualWaypoint = Instance.new("Part")
-visualWaypoint.Size = Vector3.new(0.3, 0.3, 0.3)
+visualWaypoint.Size = Vector3.new(0.5, 0.5, 0.5)
 visualWaypoint.Anchored = true
 visualWaypoint.CanCollide = false
 visualWaypoint.Material = Enum.Material.Neon
-visualWaypoint.Shape = Enum.PartType.Ball
+visualWaypoint.Shape = Enum.PartType.Block
 
 --[[ PRIVATE FUNCTIONS ]]--
 local function declareError(self, errorType)
@@ -60,18 +62,35 @@ local function declareError(self, errorType)
 	self._events.Error:Fire(errorType)
 end
 
---Create visual waypoints
+--Create visual waypoints every 5 studs
 local function createVisualWaypoints(waypoints)
 	local visualWaypoints = {}
-	for _, waypoint in ipairs(waypoints) do
-		local visualWaypointClone = visualWaypoint:Clone()
-		visualWaypointClone.Position = waypoint.Position
-		visualWaypointClone.Parent = workspace
-		visualWaypointClone.Color =
-			(waypoint == waypoints[#waypoints] and Color3.fromRGB(0, 255, 0))
-			or (waypoint.Action == Enum.PathWaypointAction.Jump and Color3.fromRGB(255, 0, 0))
-			or Color3.fromRGB(255, 139, 0)
-		table.insert(visualWaypoints, visualWaypointClone)
+	if #waypoints > 0 then
+		-- Add start point
+		local startV = visualWaypoint:Clone()
+		startV.Position = waypoints[1].Position
+		startV.Color = Color3.fromRGB(255, 255, 0) -- Yellow for start
+		startV.Parent = workspace
+		table.insert(visualWaypoints, startV)
+	end
+	for i = 1, #waypoints - 1 do
+		local start = waypoints[i].Position
+		local goal = waypoints[i + 1].Position
+		local dir = (goal - start)
+		local dist = dir.Magnitude
+		local stepSize = 5
+		local steps = math.floor(dist / stepSize)
+		for j = 0, steps do
+			local progress = j / steps
+			local pos = if j < steps then start + dir * (j * (dist / steps)) else goal
+			local v = visualWaypoint:Clone()
+			v.Position = pos
+			v.Color = (i + 1 == #waypoints and Color3.fromRGB(0, 255, 0)) -- Green for end
+				or (waypoints[i + 1].Action == Enum.PathWaypointAction.Jump and Color3.fromRGB(255, 0, 0))
+				or Color3.fromRGB(255, 139, 0)
+			v.Parent = workspace
+			table.insert(visualWaypoints, v)
+		end
 	end
 	return visualWaypoints
 end
@@ -116,8 +135,17 @@ end
 
 --Disconnect MoveToFinished connection when pathfinding ends
 local function disconnectMoveConnection(self)
-	self._moveConnection:Disconnect()
-	self._moveConnection = nil
+	if self._moveConnection then
+		self._moveConnection:Disconnect()
+		self._moveConnection = nil
+	end
+end
+
+local function disconnectStuckConnection(self)
+	if self._stuckDetectConnection then
+		self._stuckDetectConnection:Disconnect()
+		self._stuckDetectConnection = nil
+	end
 end
 
 --Fire the WaypointReached event
@@ -157,27 +185,49 @@ local function moveToFinished(self, reached)
 		move(self)
 	elseif reached then --Target reached, pathfinding ends
 		disconnectMoveConnection(self)
+		disconnectStuckConnection(self)
 		self._status = Path.StatusType.Idle
 		self._visualWaypoints = destroyVisualWaypoints(self._visualWaypoints)
 		self._events.Reached:Fire(self._agent, self._waypoints[self._currentWaypoint])
 	else --Target unreachable
 		disconnectMoveConnection(self)
+		disconnectStuckConnection(self)
 		self._status = Path.StatusType.Idle
 		self._visualWaypoints = destroyVisualWaypoints(self._visualWaypoints)
 		declareError(self, self.ErrorType.TargetUnreachable)
 	end
 end
 
---Refer to Settings.COMPARISON_CHECKS
-local function comparePosition(self)
-	if self._currentWaypoint == #self._waypoints then return end
-	self._position._count = ((self._agent.PrimaryPart.Position - self._position._last).Magnitude <= 0.07 and (self._position._count + 1)) or 0
-	self._position._last = self._agent.PrimaryPart.Position
-	if self._position._count >= self._settings.COMPARISON_CHECKS then
+-- Stuck detection function
+local function checkForStuck(self)
+	local currentTime = os.clock()
+	local dt = currentTime - self._lastTime
+	self._lastTime = currentTime
+
+	local currentPos = self._agent.PrimaryPart.Position
+	local dist = (currentPos - self._position._last).Magnitude
+	self._position._last = currentPos
+
+	if dist < 0.1 then
+		self._stuckTime += dt
+	else
+		self._stuckTime = 0
+		self._recomputeCount = 0
+	end
+
+	if self._stuckTime > 0.5 then
+		self._stuckTime = 0
 		if self._settings.JUMP_WHEN_STUCK then
 			setJumpState(self)
 		end
-		declareError(self, self.ErrorType.AgentStuck)
+		self._recomputeCount += 1
+		if self._recomputeCount > 3 then
+			declareError(self, self.ErrorType.AgentStuck)
+			disconnectStuckConnection(self)
+		else
+			disconnectMoveConnection(self)
+			self:Run(self._target)
+		end
 	end
 end
 
@@ -216,6 +266,9 @@ function Path.new(agent, agentParameters, override)
 			_last = Vector3.new();
 			_count = 0;
 		};
+		_stuckTime = 0;
+		_recomputeCount = 0;
+		_lastTime = os.clock();
 	}, Path)
 
 	--Configure settings
@@ -244,6 +297,8 @@ function Path:Destroy()
 	if rawget(self, "_visualWaypoints") then
 		self._visualWaypoints = destroyVisualWaypoints(self._visualWaypoints)
 	end
+	disconnectStuckConnection(self)
+	disconnectMoveConnection(self)
 	self._path:Destroy()
 	setmetatable(self, nil)
 	for k, _ in pairs(self) do
@@ -263,9 +318,10 @@ function Path:Stop()
 		return
 	end
 	disconnectMoveConnection(self)
+	disconnectStuckConnection(self)
 	self._status = Path.StatusType.Idle
 	self._visualWaypoints = destroyVisualWaypoints(self._visualWaypoints)
-	self._events.Stopped:Fire(self._model)
+	self._events.Stopped:Fire(self._agent)
 end
 
 function Path:GetPath(target)
@@ -351,10 +407,11 @@ function Path:Run(target)
 	self._waypoints = self._path:GetWaypoints()
 	self._currentWaypoint = 2
 
-	--Refer to Settings.COMPARISON_CHECKS
-	if self._humanoid then
-		comparePosition(self)
-	end
+	--Initialize position
+	self._position._last = self._agent.PrimaryPart.Position
+	self._stuckTime = 0
+	self._recomputeCount = 0
+	self._lastTime = os.clock()
 
 	--Visualize waypoints
 	destroyVisualWaypoints(self._visualWaypoints)
@@ -364,6 +421,13 @@ function Path:Run(target)
 	self._moveConnection = self._humanoid and (self._moveConnection or self._humanoid.MoveToFinished:Connect(function(...)
 		moveToFinished(self, ...)
 	end))
+
+	-- Stuck detection
+	if self._humanoid then
+		self._stuckDetectConnection = RunService.Heartbeat:Connect(function()
+			checkForStuck(self)
+		end)
+	end
 
 	--Begin pathfinding
 	if self._humanoid then
