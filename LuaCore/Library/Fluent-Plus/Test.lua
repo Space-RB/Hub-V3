@@ -7454,10 +7454,12 @@ function Library:Notify(Config)
 	return NotificationModule:New(Config)
 end
 
+local BaseGroupbox = {}
+
 function BaseGroupbox:AddDependencyBox()
     local Depbox = { 
         Visible = false,
-        Container = Creator:Create('Frame', {
+        Container = Creator.New('Frame', {
             BackgroundTransparency = 1,
             Size = UDim2.new(1, 0, 0, 0),
             AutomaticSize = Enum.AutomaticSize.Y,
@@ -7469,25 +7471,32 @@ function BaseGroupbox:AddDependencyBox()
 
     setmetatable(Depbox, { __index = BaseGroupbox })
 
-    local oldAddButton = Depbox.AddButton
-    Depbox.AddButton = function(self, ...)
-        return oldAddButton(self, { Parent = self.Container, ... })
+    local oldAddButton = self.AddButton
+    local oldAddToggle = self.AddToggle
+    local oldAddSlider = self.AddSlider
+    
+    function Depbox:AddButton(config)
+        config.Parent = self.Container
+        return oldAddButton(self, config)
     end
 
-    local oldAddToggle = Depbox.AddToggle
-    Depbox.AddToggle = function(self, ...)
-        return oldAddToggle(self, { Parent = self.Container, ... })
+    function Depbox:AddToggle(config)
+        config.Parent = self.Container
+        return oldAddToggle(self, config)
     end
 
-    local oldAddSlider = Depbox.AddSlider
-    Depbox.AddSlider = function(self, ...)
-        return oldAddSlider(self, { Parent = self.Container, ... })
+    function Depbox:AddSlider(config)
+        config.Parent = self.Container
+        return oldAddSlider(self, config)
     end
 
     function Depbox:SetupDependencies(deps)
         self.Dependencies = deps or {}
+        
         for _, conn in ipairs(self.Connections) do
-            conn:Disconnect()
+            if conn.Disconnect then
+                conn:Disconnect()
+            end
         end
         self.Connections = {}
 
@@ -7495,18 +7504,19 @@ function BaseGroupbox:AddDependencyBox()
             local visible = true
             for _, dep in ipairs(self.Dependencies) do
                 local option, requiredState = dep[1], dep[2]
-                if option.Value ~= requiredState then
+                if option and option.Value ~= requiredState then
                     visible = false
                     break
                 end
             end
             self.Container.Visible = visible
-            self:Resize()
         end
 
         for _, dep in ipairs(self.Dependencies) do
             local option = dep[1]
-            table.insert(self.Connections, option:OnChanged(UpdateVisibility))
+            if option and option.OnChanged then
+                table.insert(self.Connections, option:OnChanged(UpdateVisibility))
+            end
         end
         UpdateVisibility()
     end
