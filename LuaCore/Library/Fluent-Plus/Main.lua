@@ -3947,9 +3947,20 @@ ElementsTable.Toggle = (function()
 		local ToggleFrame = Components.Element(Config.Title, Config.Description, self.Container, true, Config)
 		ToggleFrame.DescLabel.Size = UDim2.new(1, -54, 0, 14)
 
+		function Toggle:SetVisible(bool)
+			if ToggleFrame and ToggleFrame.Frame then
+				ToggleFrame.Frame.Visible = bool
+			end
+		end
+
+		function Toggle:GetVisible()
+			return ToggleFrame and ToggleFrame.Frame and ToggleFrame.Frame.Visible or false
+		end
+
 		Toggle.SetTitle = ToggleFrame.SetTitle
 		Toggle.SetDesc = ToggleFrame.SetDesc
-		Toggle.Visible = ToggleFrame.Visible
+		Toggle.GetVisible = Toggle.GetVisible
+		Toggle.SetVisible = Toggle.SetVisible
 		Toggle.Elements = ToggleFrame
 
 		local ToggleCircle = New("ImageLabel", {
@@ -7413,6 +7424,7 @@ function Library:ToggleTransparency(Value)
 		Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value and 0.35 or 0
 	end
 end
+
 function Library:SetWindowTransparency(Value)
 	if Library.Window and Library.UseAcrylic then
 		Value = math.clamp(Value, 0, 3)
