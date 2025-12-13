@@ -1,7 +1,7 @@
--- Auto LuaCore время также 2025-12-14 01:00:42
+-- Protection 2025-12-14 01:14:35
 local LuaCore = {
-   Protect = "927qf8m0roqw81j3o1nyrqqhb3kqzixa",
-   Api = "8258ab8e3b4ef0cb4ac320eae388b6c4",
-   Id = "915f309b-6464-49ff-a822-a390ae5fea22",
+   Protect = "tq6g8mtiuzu367jhf5jr4vd0raxseq5j",
+   Api = "01d3956dbaaaaea007bd496f4b0fb3d5",
+   Id = "2039fe57-893f-487f-bc6f-026957f0eb9a",
 };
 return LuaCore
