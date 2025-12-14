@@ -1,7 +1,7 @@
--- Protection 2025-12-14 15:14:35
+-- Protection 2025-12-14 15:24:35
 local LuaCore = {
-   Protect = "wj5nkdt7633gloyhskzkw15y93hsfcv6",
-   Api = "b0dabcab2f1b7f2cfbb38ca8f7f44e26",
-   Id = "c55a3889-a70d-4716-b0ab-51ccb070e0c1",
+   Protect = "prlvkk6jh1ruj4wgl0w8swqofg7z4env",
+   Api = "ee7fd3cfa0f058393d65b447fddbbb26",
+   Id = "62753535-e91a-443a-bcaa-4fc01be046e9",
 };
 return LuaCore
