@@ -2211,30 +2211,34 @@ Components.Section = (function()
         end
 
         function Section:Destroy()
-            if Section.Container then
-                for _, child in pairs(Section.Container:GetChildren()) do
-                    if child:IsA("GuiObject") then
-                        child:Destroy()
+            if Section._connections then
+                for _, connection in ipairs(Section._connections) do
+                    if connection then
+                        connection:Disconnect()
                     end
                 end
-                Section.Container:Destroy()
-                Section.Container = nil
+                Section._connections = nil
             end
             
             if Section.Root then
+                Section.Root:ClearAllChildren()
+                Section.Root.Parent = nil
                 Section.Root:Destroy()
                 Section.Root = nil
             end
             
-            if Section.Layout then
-                Section.Layout:Destroy()
-                Section.Layout = nil
-            end
+            Section.Layout = nil
+            Section.Container = nil
             
             if Library.Windows and #Library.Windows > 0 then
                 local currentWindow = Library.Windows[#Library.Windows]
-                if currentWindow and currentWindow.AllElements and Section.Root then
-                    currentWindow.AllElements[Section.Root] = nil
+                if currentWindow and currentWindow.AllElements then
+                    for elementRoot, _ in pairs(currentWindow.AllElements) do
+                        if elementRoot == Section.Root then
+                            currentWindow.AllElements[elementRoot] = nil
+                            break
+                        end
+                    end
                 end
             end
             
