@@ -2099,86 +2099,154 @@ Components.Element = (function()
 	end
 end)()
 Components.Section = (function()
-	local New = Creator.New
+    local New = Creator.New
 
-	return function(Title, Parent, Icon)
-		local Section = {}
+    return function(Title, Parent, Icon)
+        local Section = {}
+        
+        Section.Layout = New("UIListLayout", {
+            Padding = UDim.new(0, 5),
+        })
 
-		Section.Layout = New("UIListLayout", {
-			Padding = UDim.new(0, 5),
-		})
+        Section.Container = New("Frame", {
+            Size = UDim2.new(1, 0, 0, 26),
+            Position = UDim2.fromOffset(0, 24),
+            BackgroundTransparency = 1,
+        }, {
+            Section.Layout,
+        })
 
-		Section.Container = New("Frame", {
-			Size = UDim2.new(1, 0, 0, 26),
-			Position = UDim2.fromOffset(0, 24),
-			BackgroundTransparency = 1,
-		}, {
-			Section.Layout,
-		})
+        local SectionHeader = New("Frame", {
+            Size = UDim2.new(1, -16, 0, 18),
+            Position = UDim2.fromOffset(0, 2),
+            BackgroundTransparency = 1,
+        }, {
+            New("UIListLayout", {
+                Padding = UDim.new(0, 5),
+                FillDirection = Enum.FillDirection.Horizontal,
+                SortOrder = Enum.SortOrder.LayoutOrder,
+                VerticalAlignment = Enum.VerticalAlignment.Center,
+            }),
+            Icon and New("ImageLabel", {
+                Image = Icon,
+                Size = UDim2.fromOffset(16, 16),
+                BackgroundTransparency = 1,
+                LayoutOrder = 1,
+                ThemeTag = {
+                    ImageColor3 = "Text",
+                },
+            }) or nil,
+            New("TextLabel", {
+                RichText = true,
+                Text = Title,
+                TextTransparency = 0,
+                FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
+                TextSize = 18,
+                TextXAlignment = "Left",
+                TextYAlignment = "Center",
+                Size = UDim2.fromScale(0, 1),
+                AutomaticSize = Enum.AutomaticSize.X,
+                BackgroundTransparency = 1,
+                LayoutOrder = 2,
+                ThemeTag = {
+                    TextColor3 = "Text",
+                },
+            }),
+        })
 
-		local SectionHeader = New("Frame", {
-			Size = UDim2.new(1, -16, 0, 18),
-			Position = UDim2.fromOffset(0, 2),
-			BackgroundTransparency = 1,
-		}, {
-			New("UIListLayout", {
-				Padding = UDim.new(0, 5),
-				FillDirection = Enum.FillDirection.Horizontal,
-				SortOrder = Enum.SortOrder.LayoutOrder,
-				VerticalAlignment = Enum.VerticalAlignment.Center,
-			}),
-			Icon and New("ImageLabel", {
-				Image = Icon,
-				Size = UDim2.fromOffset(16, 16),
-				BackgroundTransparency = 1,
-				LayoutOrder = 1,
-				ThemeTag = {
-					ImageColor3 = "Text",
-				},
-			}) or nil,
-			New("TextLabel", {
-				RichText = true,
-				Text = Title,
-				TextTransparency = 0,
-				FontFace = Font.new("rbxassetid://12187365364", Enum.FontWeight.SemiBold, Enum.FontStyle.Normal),
-				TextSize = 18,
-				TextXAlignment = "Left",
-				TextYAlignment = "Center",
-				Size = UDim2.fromScale(0, 1),
-				AutomaticSize = Enum.AutomaticSize.X,
-				BackgroundTransparency = 1,
-				LayoutOrder = 2,
-				ThemeTag = {
-					TextColor3 = "Text",
-				},
-			}),
-		})
+        Section.Root = New("Frame", {
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1, 0, 0, 26),
+            LayoutOrder = 7,
+            Parent = Parent,
+        }, {
+            SectionHeader,
+            Section.Container,
+        })
 
-		Section.Root = New("Frame", {
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1, 0, 0, 26),
-			LayoutOrder = 7,
-			Parent = Parent,
-		}, {
-			SectionHeader,
-			Section.Container,
-		})
+        Creator.AddSignal(Section.Layout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
+            Section.Container.Size = UDim2.new(1, 0, 0, Section.Layout.AbsoluteContentSize.Y)
+            Section.Root.Size = UDim2.new(1, 0, 0, Section.Layout.AbsoluteContentSize.Y + 25)
+        end)
 
-		Creator.AddSignal(Section.Layout:GetPropertyChangedSignal("AbsoluteContentSize"), function()
-			Section.Container.Size = UDim2.new(1, 0, 0, Section.Layout.AbsoluteContentSize.Y)
-			Section.Root.Size = UDim2.new(1, 0, 0, Section.Layout.AbsoluteContentSize.Y + 25)
-		end)
+        if Library.Windows and #Library.Windows > 0 then
+            local currentWindow = Library.Windows[#Library.Windows]
+            if currentWindow and currentWindow.RegisterElement then
+                currentWindow.RegisterElement(Section.Root, Title, "Section")
+            end
+        end
 
+        function Section:SetTitle(NewTitle)
+            if SectionHeader then
+                local textLabel = SectionHeader:FindFirstChildOfClass("TextLabel")
+                if textLabel then
+                    textLabel.Text = NewTitle
+                end
+            end
+        end
 
-		if Library.Windows and #Library.Windows > 0 then
-			local currentWindow = Library.Windows[#Library.Windows]
-			if currentWindow and currentWindow.RegisterElement then
-				currentWindow.RegisterElement(Section.Root, Title, "Section")
-			end
-		end
+        function Section:GetTitle()
+            if SectionHeader then
+                local textLabel = SectionHeader:FindFirstChildOfClass("TextLabel")
+                return textLabel and textLabel.Text or ""
+            end
+            return ""
+        end
 
-		return Section
-	end
+        function Section:Visible(Bool)
+            if Section.Root then
+                Section.Root.Visible = Bool
+            end
+        end
+
+        function Section:IsVisible()
+            return Section.Root and Section.Root.Visible or false
+        end
+
+        function Section:AddElement(Element)
+            if Element.Frame and Section.Container then
+                Element.Frame.Parent = Section.Container
+                return Element
+            end
+        end
+
+        function Section:Destroy()
+            if Section.Container then
+                for _, child in pairs(Section.Container:GetChildren()) do
+                    if child:IsA("GuiObject") then
+                        child:Destroy()
+                    end
+                end
+                Section.Container:Destroy()
+                Section.Container = nil
+            end
+            
+            if Section.Root then
+                Section.Root:Destroy()
+                Section.Root = nil
+            end
+            
+            if Section.Layout then
+                Section.Layout:Destroy()
+                Section.Layout = nil
+            end
+            
+            if Library.Windows and #Library.Windows > 0 then
+                local currentWindow = Library.Windows[#Library.Windows]
+                if currentWindow and currentWindow.AllElements and Section.Root then
+                    currentWindow.AllElements[Section.Root] = nil
+                end
+            end
+            
+            for k in pairs(Section) do
+                Section[k] = nil
+            end
+            
+            setmetatable(Section, nil)
+        end
+
+        return Section
+    end
 end)()
 Components.Tab = (function()
 	local New = Creator.New
