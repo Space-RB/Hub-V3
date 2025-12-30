@@ -129,8 +129,8 @@ local function CreateWatermark()
     RunService.RenderStepped:Connect(updateText)
 end
 
-if game.PlaceId == 131716211654599 or game.PlaceId == 16732694052 then
-    return
-else
+local NoWatermark = {5591597781, 3260590327, 76558904092080, 129009554587176, 131884594917121, 110052129439616, 131716211654599, 16732694052}
+
+if not table.find(NoWatermark, game.PlaceId) then
     CreateWatermark()
 end
