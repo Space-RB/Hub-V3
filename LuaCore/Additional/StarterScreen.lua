@@ -1,7 +1,5 @@
 print("[Space Hub]: Loading Starter Gui");
-getgenv().StarterScreen = "Halloween"; -- Style: Default / Halloween / Christmas / Easter
-
-return
+getgenv().StarterScreen = "Christmas"; -- Style: Default / Halloween / Christmas / Easter
 
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
@@ -68,7 +66,6 @@ local function SpaceHubLoader(cfg)
 			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 230, 200))
 		}
 	else
-		-- 🌌 более фиолетовый градиент (глубокий, плавный)
 		grad.Color = ColorSequence.new{
 			ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 40, 160)),
 			ColorSequenceKeypoint.new(0.5, Color3.fromRGB(130, 70, 230)),
@@ -208,7 +205,7 @@ local function SpaceHubLoader(cfg)
 	blur:Destroy()
 end
 
-SpaceHubLoader({
+return SpaceHubLoader({
 	Name = "SPACE HUB",
 	Style = getgenv().StarterScreen,
 	Scale = 4
