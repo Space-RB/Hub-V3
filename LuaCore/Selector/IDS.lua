@@ -24,6 +24,7 @@ local IDS = {
     [93978595733734]  = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/ViolenceDistruct.lua",         -- Violence Distruct
     [185655149]       = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/BloxBurg.lua",                 -- Bloxburg
     [119048529960596] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/RS3.lua",                      -- Restaurant Tycoon 3
+    [99889627739043]  = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/RS3.lua",                      -- Restaurant Tycoon 3
     [127742093697776] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/PlantVsBrainrots.lua",         -- Plant Vs Brainrots
     [121864768012064] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/FishIt.lua",                   -- Fish It 
     [138837502355157] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/Grace.lua",                    -- Grace | Lobby
