@@ -35,6 +35,7 @@ local IDS = {
     [76558904092080]  = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/TheForge.lua",                 -- The Forge 1
     [129009554587176] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/TheForge.lua",                 -- The Forge 2
     [131884594917121] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/TheForge.lua",                 -- The Forge 3
+    [110459623978232] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/TheForge.lua",                 -- The Forge 1 / Test Server
     [110052129429616] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/TheForge.lua",                 -- The Forge 3 / Test Server
     [136407404714539] = "https://raw.githubusercontent.com/Space-RB/Hub-V3/refs/heads/main/Scripts/FindTheBrainrots.lua",         -- FindTheBrainrots
     --[101949297449238] = "",                                                                                                     -- Build an Island
